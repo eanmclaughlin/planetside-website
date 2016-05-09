@@ -6,3 +6,11 @@ $roboto-font-path: '../assets/';
 
 // ember-cli-materialize styles
 @import 'ember-cli-materialize';
+
+
+div.population-chart {
+  svg {
+    display: block;
+    margin: auto;
+  }
+}

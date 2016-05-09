@@ -1,8 +1,14 @@
 import Ember from 'ember';
 
+function resolve(path, obj, safe) {
+  return path.split('.').reduce(function (prev, curr) {
+    return !safe ? prev[curr] : (prev ? prev[curr] : undefined);
+  }, obj);
+}
+
 /* global d3 */
 export default Ember.Component.extend({
-  className: 'population-chart',
+  classNames: ['population-chart'],
   data: [
     {faction: "Vanu Sovereignty"},
     {faction: "Terran Republic"},
@@ -12,14 +18,13 @@ export default Ember.Component.extend({
 
   didInsertElement: function () {
     this._super(...arguments);
-    var chart = d3.select(this.get('element')).append('svg')
-      .attr('width', 1000)
-      .attr('height', 1000)
+    var chart = d3.select(this.get('element')).select('svg')
+      .attr('width', 500)
+      .attr('height', 500)
       .chart('Pie', {
-        height: 1000,
-        width: 1000,
-        donut: {
-        }
+        height: 500,
+        width: 500,
+        donut: {}
       });
 
     this.set('chart', chart);
@@ -32,10 +37,10 @@ export default Ember.Component.extend({
   },
 
   populationUpdated: function (pop) {
-    var global = pop.global;
+    var population = resolve(this.get('path'), pop, true);
     var data = this.get('data');
     data.forEach(function (dataObj, index) {
-      data[index].count = global[dataObj.faction];
+      data[index].count = population[dataObj.faction];
     });
     this.set('data', data);
     this.draw();
