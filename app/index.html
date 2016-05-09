@@ -3,9 +3,13 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>PlanetsideWebsite</title>
+    <title>Planetside Website</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="assets/vendor.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://raw.github.com/misoproject/d3.chart/master/d3.chart.js"></script>
+    <script src="d3-donut.js"></script>
 
     {{content-for "head"}}
 
@@ -17,7 +21,6 @@
   <body>
     {{content-for "body"}}
 
-    <script src="assets/vendor.js"></script>
     <script src="assets/planetside-website.js"></script>
 
     {{content-for "body-footer"}}
