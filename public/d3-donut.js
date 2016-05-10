@@ -17,7 +17,8 @@
 
   d3.chart('Pie', {
     initialize: function (options) {
-      var pieGroup;
+      var pieGroup,
+        labelGroup;
 
       this.color = d3.scale.ordinal().range(["#8B30C9", "#D21600", "#0B73DA"]);
 
@@ -25,9 +26,11 @@
 
       this.width(options.width || this.base.attr('width') || 200);
       this.height(options.height || this.base.attr('height') || 200);
-      this.radius(options.radius || this.width()/3);
+      this.radius(options.radius || this.width() / 3);
+      this.textRad = this.width() / 4;
+      this.labels = options.labels || false;
       if (options.donut) {
-        this.innerRadius(options.donut.radius || (this.width() - (this.width()/2.5))/3);
+        this.innerRadius(options.donut.radius || (this.width() - (this.width() / 2.5)) / 3);
       }
 
       this.arc = d3.svg.arc()
@@ -49,6 +52,10 @@
       pieGroup = this.base.append('g')
         .attr('class', 'arc')
         .attr('transform', 'translate(' + options.width / 2 + ',' + options.height / 2 + ')');
+      labelGroup = this.base.append('g')
+        .attr('class', 'labels')
+        .attr('transform', 'translate(' + options.width / 2 + ',' + options.height / 2 + ')');
+
 
       this.key = function (d) {
         return d.faction;
@@ -90,6 +97,53 @@
           }
         }
       });
+      if (this.labels) {
+        this.layer('labels', labelGroup, {
+          dataBind: function (data) {
+            return this.selectAll('text')
+              .data(data);
+          },
+
+          insert: function () {
+            return this.insert('text')
+              .attr('class', 'label');
+          },
+
+          events: {
+            enter: function () {
+              this.text(function (d) {
+                return d.data.count;
+              });
+            },
+
+            "merge:transition": function () {
+              var chart = this.chart();
+
+              this.transition().duration(1000)
+                .attrTween("transform", function (d) {
+                  this._current = this._current || d;
+                  var interpolate = d3.interpolate(this._current, d);
+                  this._current = interpolate(0);
+                  return function (t) {
+                    var d2 = interpolate(t);
+                    var pos = chart.arc.centroid(d2);
+                    return "translate(" + pos + ")";
+                  };
+                })
+
+                .text(function (d) {
+
+                  return d.data.count ? d.data.count : '';
+                });
+            }
+          }
+
+        });
+      }
+    },
+
+    midAngle: function (d) {
+      return d.startAngle + (d.endAngle - d.startAngle) / 2;
     },
 
     transform: function (data) {

@@ -2,6 +2,7 @@ export function initialize( application ) {
   application.register('io:main', window.io, {instantiate: false});
   application.inject('service:planetsidesocket', 'io', 'io:main');
   application.inject('component', 'ps2socket', 'service:planetsidesocket');
+  application.inject('controller', 'ps2socket', 'service:planetsidesocket');
 }
 
 export default {

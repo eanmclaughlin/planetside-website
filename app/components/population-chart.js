@@ -15,16 +15,22 @@ export default Ember.Component.extend({
     {faction: "New Conglomerate"}
   ],
   chart: {},
+  height: 400,
+  width: 400,
+  chartName: Ember.computed('world', 'zone', function () {
+    return `${this.get('world')} ${this.get('zone') ? this.get('zone') : ''}`;
+  }),
 
   didInsertElement: function () {
     this._super(...arguments);
     var chart = d3.select(this.get('element')).select('svg')
-      .attr('width', 500)
-      .attr('height', 500)
+      .attr('width', this.get('width'))
+      .attr('height', this.get('height'))
       .chart('Pie', {
-        height: 500,
-        width: 500,
-        donut: {}
+        height: this.get('height'),
+        width: this.get('width'),
+        donut: true,
+        labels: true
       });
 
     this.set('chart', chart);
@@ -33,17 +39,34 @@ export default Ember.Component.extend({
   init: function () {
     this._super(...arguments);
     this.get('ps2socket').on('population', this, 'populationUpdated');
-    this.get('data');
   },
 
   populationUpdated: function (pop) {
-    var population = resolve(this.get('path'), pop, true);
-    var data = this.get('data');
-    data.forEach(function (dataObj, index) {
-      data[index].count = population[dataObj.faction];
-    });
-    this.set('data', data);
-    this.draw();
+    var world = this.get('world');
+    var zone = this.get('zone');
+
+    var path = "";
+    if (world) {
+      path += 'worlds.' + world;
+    }
+    if (zone) {
+      path += '.zones.' + zone;
+    }
+
+    var population = resolve(path, pop, true);
+    if (population) {
+      var data = this.get('data');
+      data.forEach(function (dataObj, index) {
+        if (!population[dataObj.faction]) {
+          data[index].count = 0;
+        }
+        else {
+          data[index].count = population[dataObj.faction];
+        }
+      });
+      this.set('data', data);
+      this.draw();
+    }
   },
 
   draw: function () {

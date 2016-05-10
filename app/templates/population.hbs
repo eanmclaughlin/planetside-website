@@ -1,4 +1,10 @@
-{{population-chart path="global" title="Global Population"}}
-{{population-chart  path="worlds.Connery" title="Connery Population" }}
-
+{{md-btn text="Reset" action="reset"}}
+{{#each model.worlds as |world|}}
+    <div class="row">
+      {{population-chart world=world height=400 width=400}}
+      {{#each model.zones as |zone|}}
+        {{population-chart world=world zone=zone height=400 width=400}}
+      {{/each}}
+    </div>
+{{/each}}
 {{outlet}}

@@ -27,5 +27,9 @@ export default Ember.Service.extend(Ember.Evented, {
 
   unsubscribe(removeSub){
 
+  },
+
+  send(message, payload){
+    socket.emit(message, payload);
   }
 });
