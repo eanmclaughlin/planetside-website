@@ -27,7 +27,6 @@
       this.width(options.width || this.base.attr('width') || 200);
       this.height(options.height || this.base.attr('height') || 200);
       this.radius(options.radius || this.width() / 3);
-      this.textRad = this.width() / 4;
       this.labels = options.labels || false;
       if (options.donut) {
         this.innerRadius(options.donut.radius || (this.width() - (this.width() / 2.5)) / 3);
